@@ -1,0 +1,13 @@
+program Aibolit;
+
+uses
+  Forms,
+  unit_main in 'unit_main.pas' {form_main};
+
+{$R *.res}
+
+begin
+  Application.Initialize;
+  Application.CreateForm(Tform_main, form_main);
+  Application.Run;
+end.

@@ -110,6 +110,8 @@ implementation
 
 {$R *.dfm}
 
+//комментарий для теста ГИТ
+
 //создание главной формы
 procedure Tform_main.FormCreate(Sender: TObject);
 begin
