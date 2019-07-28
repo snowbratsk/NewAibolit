@@ -1,6 +1,6 @@
 object form_main: Tform_main
-  Left = 87
-  Top = 254
+  Left = 410
+  Top = 150
   Align = alClient
   BorderIcons = [biSystemMenu, biMinimize]
   BorderStyle = bsSingle
@@ -423,6 +423,14 @@ object form_main: Tform_main
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 2
+        OnChange = cb_pet_kindChange
+        Items.Strings = (
+          #1050#1086#1096#1082#1072
+          #1057#1086#1073#1072#1082#1072
+          #1055#1090#1080#1094#1072
+          #1061#1086#1088#1105#1082
+          #1043#1088#1099#1079#1091#1085
+          #1044#1088#1091#1075#1086#1077)
       end
       object cb_pet_sex: TComboBox
         Left = 104
@@ -432,6 +440,9 @@ object form_main: Tform_main
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 3
+        Items.Strings = (
+          #1057#1072#1084#1077#1094
+          #1057#1072#1084#1082#1072)
       end
       object dt_pet_birth: TDateTimePicker
         Left = 104
@@ -450,6 +461,11 @@ object form_main: Tform_main
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 5
+        Items.Strings = (
+          #1047#1076#1086#1088#1086#1074
+          #1051#1077#1095#1080#1090#1089#1103
+          #1059#1096#1077#1083' '#1074' '#1076#1088#1091#1075#1091#1102' '#1082#1083#1080#1085#1080#1082#1091
+          #1059#1084#1077#1088)
       end
       object cb_pet_chronic: TComboBox
         Left = 104
@@ -459,6 +475,9 @@ object form_main: Tform_main
         Style = csDropDownList
         ItemHeight = 13
         TabOrder = 6
+        Items.Strings = (
+          #1053#1077#1090
+          #1044#1072)
       end
       object ed_pet_kind: TEdit
         Left = 256
@@ -466,6 +485,7 @@ object form_main: Tform_main
         Width = 233
         Height = 21
         TabOrder = 7
+        Visible = False
       end
       object b_no_breed: TButton
         Left = 232
@@ -474,7 +494,17 @@ object form_main: Tform_main
         Height = 20
         Caption = #1041#1077#1089#1087#1086#1088#1086#1076#1085#1099#1081
         TabOrder = 8
+        OnClick = b_no_breedClick
       end
+    end
+    object b_savepatient: TButton
+      Left = 8
+      Top = 344
+      Width = 161
+      Height = 25
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      TabOrder = 2
+      OnClick = b_savepatientClick
     end
   end
   object gb_mainmenu: TGroupBox

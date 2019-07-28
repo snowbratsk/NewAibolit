@@ -81,6 +81,7 @@ type
     l_pet_status: TLabel;
     l_pet_chronic: TLabel;
     b_no_breed: TButton;
+    b_savepatient: TButton;
     procedure FormCreate(Sender: TObject);
     procedure b_changedoctorClick(Sender: TObject);
     procedure b_cardsClick(Sender: TObject);
@@ -96,6 +97,9 @@ type
     procedure cb_addsearchClick(Sender: TObject);
     procedure b_clearClick(Sender: TObject);
     procedure b_addpatientClick(Sender: TObject);
+    procedure b_no_breedClick(Sender: TObject);
+    procedure cb_pet_kindChange(Sender: TObject);
+    procedure b_savepatientClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -109,8 +113,6 @@ var
 implementation
 
 {$R *.dfm}
-
-//комментарий для теста ГИТ
 
 //создание главной формы
 procedure Tform_main.FormCreate(Sender: TObject);
@@ -282,6 +284,60 @@ procedure Tform_main.b_addpatientClick(Sender: TObject);
 begin
 //выводим вперёд окно регистрации
 gb_registration.BringToFront;
+end;
+
+procedure Tform_main.b_no_breedClick(Sender: TObject);
+begin
+//"Б/п" в поле "Порода"
+ed_pet_breed.Text:='Б/п';
+end;
+
+procedure Tform_main.cb_pet_kindChange(Sender: TObject);
+begin
+//если выбрано "Другое", отображаем поле ввода вида,
+//иначе соотносим выбранное с полем ввода вида
+if cb_pet_kind.ItemIndex=5 then
+  begin
+  ed_pet_kind.Visible:=true;
+  ed_pet_kind.Text:='';
+  end
+  else
+  begin
+  ed_pet_kind.Visible:=false;
+  ed_pet_kind.Text:=cb_pet_kind.Text;
+  end;
+end;
+
+procedure Tform_main.b_savepatientClick(Sender: TObject);
+begin
+//при нажатии на кнопку сохранить открываем таблицу tab_people на добавление
+//соотносим поля таблицы с edit-ами, сохраняем таблицу и для гарантии переходим в конец
+tab_people.Append;
+tab_people.fieldbyname('people_fio').AsString:=ed_owner_fio.text;
+tab_people.fieldbyname('people_adress').AsString:=ed_owner_adr.text;
+tab_people.fieldbyname('people_tel').AsString:=ed_owner_tel.text;
+tab_people.fieldbyname('people_misc').AsString:=ed_owner_misc.text;
+tab_people.Post;
+tab_people.Last;
+
+//теперь открываем на добавление табличку tab_pet, так же всё соотносим и сохраняем
+tab_pet.Append;
+tab_pet.fieldbyname('pet_name').AsString:=ed_pet_klichka.text;
+tab_pet.fieldbyname('pet_kind').AsString:=ed_pet_kind.text;
+tab_pet.fieldbyname('pet_sex').AsString:=cb_pet_sex.text;
+tab_pet.fieldbyname('pet_breed').AsString:=ed_pet_breed.text;
+tab_pet.fieldbyname('pet_birthdate').AsDateTime:=dt_pet_birth.Date;
+tab_pet.fieldbyname('pet_status').AsString:=cb_pet_status.text;
+tab_pet.fieldbyname('pet_chronic').AsString:=cb_pet_chronic.text;
+//присваиваем владельца
+tab_pet.fieldbyname('pet_owner').AsInteger:=tab_people.fieldbyname('people_id').AsInteger;
+//сохраняем
+tab_pet.Post;
+//обновляем всё
+tab_people.Refresh;
+tab_pet.Refresh;
+sql_cards.Refresh;
+
 end;
 
 end.
