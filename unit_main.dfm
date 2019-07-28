@@ -176,6 +176,7 @@ object form_main: Tform_main
         Height = 25
         Caption = #1056#1077#1076#1072#1082#1090#1080#1088#1086#1074#1072#1090#1100' '#1076#1072#1085#1085#1099#1077' '#1087#1072#1094#1080#1077#1085#1090#1072
         TabOrder = 5
+        OnClick = b_editdataClick
       end
       object b_lookhistory: TButton
         Left = 344
@@ -505,6 +506,15 @@ object form_main: Tform_main
       Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
       TabOrder = 2
       OnClick = b_savepatientClick
+    end
+    object b_save_editable: TButton
+      Left = 8
+      Top = 344
+      Width = 161
+      Height = 25
+      Caption = #1057#1086#1093#1088#1072#1085#1080#1090#1100
+      TabOrder = 3
+      OnClick = b_save_editableClick
     end
   end
   object gb_mainmenu: TGroupBox

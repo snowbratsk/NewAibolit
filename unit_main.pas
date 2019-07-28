@@ -82,6 +82,7 @@ type
     l_pet_chronic: TLabel;
     b_no_breed: TButton;
     b_savepatient: TButton;
+    b_save_editable: TButton;
     procedure FormCreate(Sender: TObject);
     procedure b_changedoctorClick(Sender: TObject);
     procedure b_cardsClick(Sender: TObject);
@@ -100,6 +101,8 @@ type
     procedure b_no_breedClick(Sender: TObject);
     procedure cb_pet_kindChange(Sender: TObject);
     procedure b_savepatientClick(Sender: TObject);
+    procedure b_save_editableClick(Sender: TObject);
+    procedure b_editdataClick(Sender: TObject);
   private
     { Private declarations }
 
@@ -217,7 +220,7 @@ if length (search_fio.Text)>0 then search_string:='people_fio LIKE ' + #39+ '*' 
 if length (search_klichka.Text)>0 then
             begin
             if length (search_string)>0 then search_string:=search_string + ' AND ';
-            search_string:=search_string + 'klichka LIKE ' + #39+ '*' + search_klichka.Text + '*' + #39;
+            search_string:=search_string + 'pet_name LIKE ' + #39+ '*' + search_klichka.Text + '*' + #39;
             end;
 if cb_addsearch.Checked then //Если включен доп.поиск
   begin
@@ -282,6 +285,24 @@ end;
 //Клик по кнопке "Регистрация пациента"
 procedure Tform_main.b_addpatientClick(Sender: TObject);
 begin
+//прячем кнопку сохранения для редактирования пациента
+b_save_editable.Visible:=false;
+//очищаем все поля
+ed_owner_fio.text:='';
+ed_owner_adr.text:='';
+ed_owner_tel.text:='';
+ed_owner_misc.text:='';
+
+ed_pet_klichka.text:='';
+cb_pet_kind.ItemIndex:=-1;
+ed_pet_kind.text:='';
+cb_pet_sex.ItemIndex:=-1;
+ed_pet_breed.text:='';
+dt_pet_birth.Date:=Date;
+cb_pet_status.ItemIndex:=-1;
+cb_pet_chronic.ItemIndex:=-1;
+
+
 //выводим вперёд окно регистрации
 gb_registration.BringToFront;
 end;
@@ -308,7 +329,7 @@ if cb_pet_kind.ItemIndex=5 then
   end;
 end;
 
-procedure Tform_main.b_savepatientClick(Sender: TObject);
+procedure Tform_main.b_savepatientClick(Sender: TObject);  //Кнопка "Сохранить" для нового пациента
 begin
 //при нажатии на кнопку сохранить открываем таблицу tab_people на добавление
 //соотносим поля таблицы с edit-ами, сохраняем таблицу и для гарантии переходим в конец
@@ -337,6 +358,77 @@ tab_pet.Post;
 tab_people.Refresh;
 tab_pet.Refresh;
 sql_cards.Refresh;
+
+end;
+
+procedure Tform_main.b_save_editableClick(Sender: TObject); //Кнопка "Сохранить" для редактирования пациента
+begin
+
+//при нажатии на кнопку сохранить открываем таблицу tab_people на редактирование
+//соотносим поля таблицы с edit-ами и сохраняем таблицу
+tab_people.Edit;
+tab_people.fieldbyname('people_fio').AsString:=ed_owner_fio.text;
+tab_people.fieldbyname('people_adress').AsString:=ed_owner_adr.text;
+tab_people.fieldbyname('people_tel').AsString:=ed_owner_tel.text;
+tab_people.fieldbyname('people_misc').AsString:=ed_owner_misc.text;
+tab_people.Post;
+
+//теперь открываем на редактирование табличку tab_pet, так же всё соотносим и сохраняем
+tab_pet.Edit;
+tab_pet.fieldbyname('pet_name').AsString:=ed_pet_klichka.text;
+tab_pet.fieldbyname('pet_kind').AsString:=ed_pet_kind.text;
+tab_pet.fieldbyname('pet_sex').AsString:=cb_pet_sex.text;
+tab_pet.fieldbyname('pet_breed').AsString:=ed_pet_breed.text;
+tab_pet.fieldbyname('pet_birthdate').AsDateTime:=dt_pet_birth.Date;
+tab_pet.fieldbyname('pet_status').AsString:=cb_pet_status.text;
+tab_pet.fieldbyname('pet_chronic').AsString:=cb_pet_chronic.text;
+//сохраняем
+tab_pet.Post;
+//обновляем всё
+tab_people.Refresh;
+tab_pet.Refresh;
+sql_cards.Refresh;
+
+//возвращаемся обратно в картотеку
+gb_cards.BringToFront;
+
+end;
+
+
+
+procedure Tform_main.b_editdataClick(Sender: TObject);
+begin
+//При нажатии на кнопку "Редактировать пациента" соотносим поля группы "Добавление пациента"
+//с соответствующими полями таблиц и перемещаем оную группу вперёд
+//В комбобоксах с помощью i:=ComboBox1.Items.IndexOf(SearchingString) ищем соответствия
+ed_owner_fio.text:=tab_people.fieldbyname('people_fio').AsString;
+ed_owner_adr.text:=tab_people.fieldbyname('people_adress').AsString;
+ed_owner_tel.text:=tab_people.fieldbyname('people_tel').AsString;
+ed_owner_misc.text:=tab_people.fieldbyname('people_misc').AsString;
+
+ed_pet_klichka.text:=tab_pet.fieldbyname('pet_name').AsString;
+cb_pet_sex.ItemIndex:=cb_pet_sex.Items.IndexOf(tab_pet.fieldbyname('pet_sex').AsString);
+ed_pet_breed.text:=tab_pet.fieldbyname('pet_breed').AsString;
+dt_pet_birth.Date:=tab_pet.fieldbyname('pet_birthdate').AsDateTime;
+cb_pet_status.ItemIndex:=cb_pet_status.Items.IndexOf(tab_pet.fieldbyname('pet_status').AsString);
+cb_pet_chronic.ItemIndex:=cb_pet_chronic.Items.IndexOf(tab_pet.fieldbyname('pet_chronic').AsString);
+
+//с видом грибновато получается. Проверяем itemindex, если он -1, то отображаем edit с видом и туда прописываем значение поля таблицы
+//если же нет, то ищем соответствие, как с остальными
+if cb_pet_kind.Items.IndexOf(tab_pet.fieldbyname('pet_kind').AsString) = -1 then
+  begin
+  cb_pet_kind.ItemIndex:=5;
+  ed_pet_kind.Visible:=True;
+  ed_pet_kind.Text:=tab_pet.fieldbyname('pet_kind').AsString;
+  end
+  else
+  cb_pet_kind.ItemIndex:=cb_pet_kind.Items.IndexOf(tab_pet.fieldbyname('pet_kind').AsString);
+
+//прячем кнопку сохранения для нового пациента и открываем кнопку для редактирования
+b_savepatient.Visible:=False;
+b_save_editable.Visible:=True;
+
+gb_registration.BringToFront;
 
 end;
 
